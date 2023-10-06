@@ -1,0 +1,11 @@
+--------------authProvider.jsx--------------
+
+// const token = localStorage.getItem(usuario.token)
+// const config = {
+// headers: {
+// "Content-Type": "application/json",
+// Authorization: `Bearer ${token}`
+// }
+// }
+
+---------------------------------------------------------------------------------
