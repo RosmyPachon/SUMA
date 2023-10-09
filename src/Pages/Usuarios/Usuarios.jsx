@@ -4,8 +4,9 @@ import React, { useState } from "react";
 import { InputText } from "primereact/inputtext";
 import { MultiSelect } from "primereact/multiselect";
 import { Button } from "primereact/button";
-import { Key_Icono, Trash_Icono, Edit_Icono } from "../../public/Icons/Iconos";
+import { Key_Icono, Trash_Icono, Edit_Icono } from "../../../public/Icons/Iconos";
 import { Link } from "react-router-dom";
+import ModalAgregarUsuarios from "../../components/Usuarios/ModalAgregarUsuarios";
 
 const Usuarios = () => {
   const [data, setData] = useState([
@@ -36,6 +37,12 @@ const Usuarios = () => {
     setSelectedColumns(event.value);
   };
 
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const toggleModal = () => {
+    setModalVisible(!modalVisible);
+  };
+
   return (
     <div className="w-5/6">
       <div className="flex justify-center gap-x-4 m-2 p-3">
@@ -43,15 +50,19 @@ const Usuarios = () => {
         <i className="pi pi-user" style={{ fontSize: "2rem" }}></i>
       </div>
       <div className="bg-neutral-100 my-3 p-3 rounded-md w-full">
-        <button className="bg-primaryYellow p-2 mx-2 rounded-md px-3 hover:bg-yellow-500">
+        <button
+          onClick={toggleModal} 
+          className="bg-primaryYellow p-2 mx-2 rounded-md px-3 hover:bg-yellow-500"
+        >
           <i className="pi pi-plus mx-2 font-medium"></i>
           Agregar
         </button>
+          <ModalAgregarUsuarios visible={modalVisible} onClose={toggleModal} />
         <Link
           className="px-4 p-2 mx-2 rounded-md text-red-500 border-2
            border-red-500 hover:bg-red-500
             hover:text-white transition duration-300 ease-in-out"
-            to="/home/config/usuarios/inactivos"
+          to="/home/config/usuarios/inactivos"
         >
           Inactivos
         </Link>
