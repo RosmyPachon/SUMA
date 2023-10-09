@@ -20,7 +20,7 @@ const routesUsuario = [
     route: "prueba",
     component: <Login />,
     key: 3
-  },
+  }
 ];
 
 export default routesUsuario;

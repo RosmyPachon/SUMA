@@ -13,7 +13,7 @@ const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const autenticarUsuario = async () => {
-            const token = localStorage.getItem('token')
+      const token = localStorage.getItem('token')
       if (!token) {
         return
       }
@@ -38,8 +38,6 @@ const AuthProvider = ({ children }) => {
     }
     autenticarUsuario()
   }, [])
-
-
 
   const cerrar_salir = () => {
     setAuthUsuario({})

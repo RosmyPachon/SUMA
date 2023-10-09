@@ -1,11 +1,40 @@
---------------authProvider.jsx--------------
+import React, { useState, useEffect } from 'react';
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
+import { MultiSelect } from 'primereact/multiselect';
+import { ProductService } from '../service/ProductService.js';
 
-// const token = localStorage.getItem(usuario.token)
-// const config = {
-// headers: {
-// "Content-Type": "application/json",
-// Authorization: `Bearer ${token}`
-// }
-// }
+export default function ColumnToggleDemo() {
+    const columns = [
+        { field: 'name', header: 'Name' },
+        { field: 'category', header: 'Category' },
+        { field: 'quantity', header: 'Quantity' }
+    ];
+    const [products, setProducts] = useState([]);
+    const [visibleColumns, setVisibleColumns] = useState(columns);
 
----------------------------------------------------------------------------------
+    useEffect(() => {
+        ProductService.getProductsMini().then((data) => setProducts(data));
+    }, []);
+
+    const onColumnToggle = (event) => {
+        let selectedColumns = event.value;
+        let orderedSelectedColumns = columns.filter((col) => selectedColumns.some((sCol) => sCol.field === col.field));
+
+        setVisibleColumns(orderedSelectedColumns);
+    };
+
+    const header = <MultiSelect value={visibleColumns} options={columns} optionLabel="header" onChange={onColumnToggle} className="w-full sm:w-20rem" display="chip" />;
+
+    return (
+        <div className="card">
+            <DataTable value={products} header={header} tableStyle={{ minWidth: '50rem' }}>
+                <Column field="code" header="Code" />
+                {visibleColumns.map((col) => (
+                    <Column key={col.field} field={col.field} header={col.header} />
+                ))}
+            </DataTable>
+        </div>
+    );
+}
+        

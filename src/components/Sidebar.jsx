@@ -78,8 +78,7 @@ const Sidebar = () => {
             <div key={index}>
               <li
                 onClick={() => setSubMenuOpen(index)}
-                className={`flex font-semibold rounded-md p-2 mx-2 cursor-pointer hover:bg-primaryYellow justify-between text-sm items-center gap-x-4 ${modulo.gap ? "mt-9" : "mt-2"
-                                    }`}
+                className={`flex font-semibold rounded-md p-2 mx-2 cursor-pointer hover:bg-primaryYellow  text-sm items-center gap-x-4 ${modulo.gap ? "mt-9" : "mt-2"}`}
               >
                 <div>
                   {modulo.icono ? (
@@ -92,7 +91,7 @@ const Sidebar = () => {
 
                 {open && modulo.menus && (
                   <i
-                    className={`pi pi-angle-down ${
+                    className={`pi pi-angle-down ml-auto ${
                       modulo.isOpen && "rotate-180"
                     } `}
                   ></i>
