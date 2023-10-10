@@ -7,7 +7,9 @@ export default {
     extend: {
       colors:{
         'primaryYellow':'#f2c302',
-        'secundaryYellow':'#F0C81F'
+        'secundaryYellow':'#F0C81F',
+        'neutralGray':'#C7C8CD',
+        'hoverGray':'#bdbdbd'
       }
     },
   },
