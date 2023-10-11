@@ -5,9 +5,17 @@ import { InputText } from "primereact/inputtext";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import useUsuarios from "../../hooks/useUsuarios";
+import { Toast } from "primereact/toast";
+import { useRef } from "react";
 
 const ModalAgregarUsuarios = ({ visible, onClose }) => {
-  const [step, setStep] = useState(1);
+
+
+  const toast = useRef(null);
+
+  const mensajeGuardado = () => {
+    toast.current.show({ severity: 'success', summary: 'Success', detail: 'Registro guardado con éxito', life: 5000 });
+  }
 
   const {
     UsuariosAgg,
@@ -21,39 +29,102 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
     guardarUsuario,
     errors,
     setErrors,
+    setUsuariosAgg,
   } = useUsuarios();
 
   const [perfilesSeleccionados, setPerfilesSeleccionados] = useState([]);
   const [modulosSeleccionados, setModulosSeleccionados] = useState([]);
   const [permisosPorModulo, setPermisosPorModulo] = useState([]);
+  const [step, setStep] = useState(1);
 
-  const handleGuardar = async () => {
+
+  const   handleGuardar = async () => {
     try {
       const formData = {
         nombre_completo: UsuariosAgg.nombre, //nombre_completo
         usuario: UsuariosAgg.usuario,
         correo: UsuariosAgg.correo,
         clave: UsuariosAgg.clave,
-        // claverepetida: UsuariosAgg.claverepetida,
         perfiles: perfilesSeleccionados,
         roles: permisosPorModulo,
       };
 
+      if (
+        step === 2 &&
+        perfilesSeleccionados.some(
+          (perfil) => perfil.id_perfil == true
+        )
+      ) {
+        console.error("No se puede guardar si algún perfil está seleccionado");
+        return;
+      }
+  
       // Llama a la función de guardarUsuario y pasa el formData
       const response = await guardarUsuario(formData);
 
-      // Maneja la respuesta del guardado si es necesario
-      // Por ejemplo, puedes mostrar un mensaje de éxito o redirigir a otra página
-      console.log("Usuario guardado con éxito:", response);
+      if (response) {
+        onClose(); // Cierra el modal
+        setStep(1); // Vuelve al primer paso
+      
+        // Limpia los campos del formulario
+        setUsuariosAgg({
+          nombre: "",
+          usuario: "",
+          correo: "",
+          clave: "",
+          claverepetida: "", // Puedes agregar más campos aquí
+        });
+        setPerfilesSeleccionados([]);
+        setModulosSeleccionados([]);
+        setPermisosPorModulo([]);
+        
+        // Muestra el mensaje de éxito
+        mensajeGuardado();
+      }
     } catch (error) {
       // Maneja los errores si ocurren
       console.error("Error al guardar el usuario:", error);
     }
   };
 
-
-
   const handleNext = () => {
+    // Realiza las validaciones aquí antes de avanzar al siguiente paso
+    const emailPattern = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
+    const errors = {};
+
+    if (step === 1) {
+      if (UsuariosAgg.nombre.length < 10 || UsuariosAgg.nombre.length > 30) {
+        errors.nombre =
+          "El nombre completo debe tener entre 10 y 30 caracteres";
+      }
+
+      if (UsuariosAgg.usuario.length < 5 || UsuariosAgg.usuario.length > 15) {
+        errors.usuario = "El usuario debe tener entre 5 y 15 caracteres";
+      }
+
+      if (!emailPattern.test(UsuariosAgg.correo)) {
+        errors.correo = "El correo electrónico no es válido";
+      }
+      if (UsuariosAgg.clave !== UsuariosAgg.claverepetida) {
+        errors.clave = "Las contraseñas no coinciden";
+        errors.claverepetida = "Las contraseñas no coinciden";
+      }
+    }
+    if (step === 2) {
+      if (perfilesSeleccionados.length === 0) {
+        errors.perfiles = "Debes seleccionar al menos un perfil";
+      }
+    }
+    
+
+    // Si hay errores, establece el estado de errores y no avances al siguiente paso
+    if (Object.keys(errors).length > 0) {
+      setErrors(errors);
+      return;
+    }
+
+    // Si no hay errores, avanza al siguiente paso
+    setErrors({}); // Limpia los errores si no hay ninguno
     setStep(step + 1);
   };
 
@@ -145,19 +216,23 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
 
   const CheckboxChangePermiso = (permisoId, moduloId, idRolModulo) => {
     // Verifica si el permiso ya está en la lista de seleccionados
-    if (permisosPorModulo.some((permiso) => permiso.id_rol === idRolModulo)) {
-      permisosPorModulo.filter((permiso) => permiso.id_rol !== idRolModulo);
+    const isPermisoSelected = permisosPorModulo.some(
+      (permiso) => permiso.id_rol === idRolModulo
+    );
+
+    if (isPermisoSelected) {
+      // Deseleccionar el permiso eliminándolo del array
+      const updatedPermisos = permisosPorModulo.filter(
+        (permiso) => permiso.id_rol !== idRolModulo
+      );
+      setPermisosPorModulo(updatedPermisos);
     } else {
       // Actualizar los permisos seleccionados para el módulo
       const updatedPermisos = [...permisosPorModulo, { id_rol: idRolModulo }];
       setPermisosPorModulo(updatedPermisos);
     }
-
-    // Muestra en la consola lo que se ha seleccionado/deseleccionado y el id_rol_modulo
-    // console.log(
-    //   `Permiso "${permisoId}" en módulo "${moduloId}" seleccionado. id_rol_modulo: ${idRolModulo}`
-    // );
   };
+
   console.log(permisosPorModulo);
 
   const checkboxPerfil = (rowData) => {
@@ -172,81 +247,98 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
     );
   };
 
- 
-
-  
-
   return (
     <Dialog
       header="Agregar Usuario"
       visible={visible}
-      style={{ width: "50vw" }}
+      style={{ width: "40vw" }}
       onHide={onClose}
       footer={footerContent}
     >
       <div>
+        <Toast ref={toast}/>
         {step === 1 && (
-          <div className="flex">
-            <div className="flex flex-col">
-              <div className="flex space-x-4">
-                <div className="flex flex-col">
-                  <label className="text-gray-600">Nombre completo</label>
-                  <InputText
-                    value={UsuariosAgg.nombre}
-                    type="text"
-                    name="nombre"
-                    className={`border-1 p-1 rounded-md ${errors.nombre ? 'border-red-500' : 'border-gray-300'}`}
-                    onChange={(e) => handleChangeUsuario(e)}
-                  />
-                   {errors.nombre && <div className="text-red-600 text-xs w-44">{errors.nombre}</div>}
-                </div>
-                <div className="flex flex-col">
-                  <label className="text-gray-600">Usuario</label>
-                  <InputText
-                    value={UsuariosAgg.usuario}
-                    type="text"
-                    name="usuario"
-                    className={`border-1 p-1 rounded-md ${errors.usuario ? 'border-red-500' : 'border-gray-300'}`}
-                    onChange={(e) => handleChangeUsuario(e)}
-                  />
-                  {errors.usuario && <div className="text-red-600 text-xs w-44">{errors.usuario}</div>}
-                </div>
-              </div>
-
+          <div className="flex flex-col">
+            <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col">
-                <label className="text-gray-600">Correo</label>
+                <label className="text-gray-600">Nombre completo *</label>
+                <InputText
+                  value={UsuariosAgg.nombre}
+                  type="text"
+                  name="nombre"
+                  className={`border-1 p-1 rounded-md ${
+                    errors.nombre ? "border-red-500" : "border-gray-300"
+                  }`}
+                  onChange={(e) => handleChangeUsuario(e)}
+                />
+                {errors.nombre && (
+                  <div className="text-red-600 text-xs w-44">
+                    {errors.nombre}
+                  </div>
+                )}
+              </div>
+              <div className="flex flex-col">
+                <label className="text-gray-600">Usuario *</label>
+                <InputText
+                  value={UsuariosAgg.usuario}
+                  type="text"
+                  name="usuario"
+                  className={`border-1 p-1 rounded-md ${
+                    errors.usuario ? "border-red-500" : "border-gray-300"
+                  }`}
+                  onChange={(e) => handleChangeUsuario(e)}
+                />
+                {errors.usuario && (
+                  <div className="text-red-600 text-xs w-44">
+                    {errors.usuario}
+                  </div>
+                )}
+              </div>
+              <div className="flex flex-col col-span-2">
+                <label className="text-gray-600">Correo *</label>
                 <InputText
                   value={UsuariosAgg.correo}
                   type="email"
                   name="correo"
-                  className={`border-1 p-1 rounded-md ${errors.correo ? 'border-red-500' : 'border-gray-300'}`}
+                  className={`border-1 p-1 rounded-md ${
+                    errors.correo ? "border-red-500" : "border-gray-300"
+                  }`}
                   onChange={(e) => handleChangeUsuario(e)}
                 />
-                {errors.correo && <div className="text-red-600 text-sm">{errors.correo}</div>}
+                {errors.correo && (
+                  <div className="text-red-600 text-sm">{errors.correo}</div>
+                )}
               </div>
 
-              <div className="flex flex-row space-x-4">
-                <div className="flex flex-col">
-                  <label className="text-gray-600">Contraseña</label>
-                  <InputText
-                    value={UsuariosAgg.clave}
-                    type="password"
-                    name="clave"
-                    className={`border-1 p-1 rounded-md ${errors.clave ? 'border-red-500' : 'border-gray-300'}`}
-                    onChange={(e) => handleChangeUsuario(e)}
-                  />
-                  {errors.clave && <div className="text-red-600">{errors.clave}</div>}
-                </div>
-                <div className="flex flex-col">
-                  <label className="text-gray-600">Repetir Contraseña</label>
-                  <InputText
-                    value={UsuariosAgg.claverepetida}
-                    type="password"
-                    name="claverepetida"
-                    className={`border-1 p-1 rounded-md ${errors.claverepetida ? 'border-red-500' : 'border-gray-300'}`}
-                    onChange={(e) => handleChangeUsuario(e)}
-                    />
-                </div>
+              <div className="flex flex-col">
+                <label className="text-gray-600">Contraseña *</label>
+                <InputText
+                  value={UsuariosAgg.clave}
+                  type="password"
+                  name="clave"
+                  className={`border-1 p-1 rounded-md ${
+                    errors.clave ? "border-red-500" : "border-gray-300"
+                  }`}
+                  onChange={(e) => handleChangeUsuario(e)}
+                />
+                {errors.clave && (
+                  <div className="text-red-600">{errors.clave}</div>
+                )}
+              </div>
+              <div className="flex flex-col">
+                <label className="text-gray-600">Repetir Contraseña *</label>
+                <InputText
+                  value={UsuariosAgg.claverepetida}
+                  type="password"
+                  name="claverepetida"
+                  className={`border-1 p-1 rounded-md ${
+                    errors.claverepetida ? "border-red-500" : "border-gray-300"
+                  }`}
+                  onChange={(e) => handleChangeUsuario(e)}
+                />
+                {errors.claverepetida && (
+                  <div className="text-red-600">{errors.claverepetida}</div>
+                )}
               </div>
             </div>
           </div>
@@ -263,8 +355,12 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
                   header="Check"
                   body={checkboxPerfil}
                   style={{ width: "3em" }}
-                />
+                  />
               </DataTable>
+                  {errors.perfiles && (
+                   <div className="text-red-600 mt-2">{errors.perfiles}</div>
+                 )}
+             
             </div>
           </div>
         )}
@@ -287,9 +383,9 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
                             key={index}
                             type="checkbox"
                             data-idrolmodulo={r.id_rol_modulo}
-                            checked={
-                              permisosPorModulo.some(permiso => permiso.id_rol == r.id_rol_modulo)
-                            }
+                            checked={permisosPorModulo.some(
+                              (permiso) => permiso.id_rol == r.id_rol_modulo
+                            )}
                             onChange={() =>
                               CheckboxChangePermiso(
                                 "Consultar",
@@ -316,9 +412,9 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
                             key={index}
                             type="checkbox"
                             data-idrolmodulo={r.id_rol_modulo}
-                            checked={
-                              permisosPorModulo.some(permiso => permiso.id_rol == r.id_rol_modulo)
-                            }
+                            checked={permisosPorModulo.some(
+                              (permiso) => permiso.id_rol == r.id_rol_modulo
+                            )}
                             onChange={() =>
                               CheckboxChangePermiso(
                                 "Crear/Editar",
@@ -345,9 +441,9 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
                             key={index}
                             type="checkbox"
                             data-idrolmodulo={r.id_rol_modulo}
-                            checked={
-                              permisosPorModulo.some(permiso => permiso.id_rol == r.id_rol_modulo)
-                            }
+                            checked={permisosPorModulo.some(
+                              (permiso) => permiso.id_rol == r.id_rol_modulo
+                            )}
                             onChange={() =>
                               CheckboxChangePermiso(
                                 "Borrar",
