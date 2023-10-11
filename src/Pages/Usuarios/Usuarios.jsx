@@ -15,14 +15,19 @@ import ModalAgregarUsuarios from '../../components/Usuarios/ModalAgregarUsuarios
 
 const Usuarios = () => {
   const toast = useRef(null);
+  const { dataUsuarios, setUsuarioState } = useUsuarios();
 
   const [modalEliminar, setModalEliminar] = useState(false)
+  const [botonUsuario, setBotonUsuario] = useState()
 
   const mensajeEliminado = () => {
-    toast.current.show({ severity: 'success', detail: 'El registro se ha inactivado correctamente. ', life: 5000 });
+    toast.current.show({ severity: 'success', detail: 'El registro se ha inactivado correctamente. ', life: 1500 });
   }
 
-  const { dataUsuarios, setEliminarUsuario } = useUsuarios();
+  const mensajeRestablecido = () => {
+    toast.current.show({ severity: 'success', detail: 'Se ha restablecido la clave del usuario correctamente. ', life: 1500 });
+  }
+ 
 
   const columns = [
     { field: "id_usuario", header: "ID" },
@@ -57,11 +62,21 @@ const Usuarios = () => {
     setFilteredData(filteredItems);
   };
 
-  const confirmDeleteProduct = (e, usuario) => {
+  const confirmDeleteUsuario = (e, usuario) => {
     e.preventDefault();
     setModalEliminar(true);
-    setEliminarUsuario(usuario);
+    setUsuarioState(usuario);
+    setBotonUsuario(1)
   };
+
+  const confirmRestablecer = (e, usuario) => {
+    e.preventDefault();
+    setModalEliminar(true);
+    setUsuarioState(usuario);
+    setBotonUsuario(2)
+  };
+
+
 
   const header = (
     <MultiSelect
@@ -92,8 +107,8 @@ const Usuarios = () => {
         <h1 className="text-3xl">Usuarios</h1>
         <i className="pi pi-user" style={{ fontSize: "2rem" }}></i>
       </div>
-      {modalEliminar ? <Confirmar modalEliminar={modalEliminar} setModalEliminar={setModalEliminar} mensajeEliminado={mensajeEliminado} /> : ""}
-      <div className="bg-neutral-100 my-3 p-3 rounded-md w-full flex">
+      {modalEliminar ? <Confirmar modalEliminar={modalEliminar} setModalEliminar={setModalEliminar} mensajeEliminado={mensajeEliminado} confirmRestablecer={confirmRestablecer} botonUsuario={botonUsuario} mensajeRestablecido={mensajeRestablecido} /> : ""}
+      <div className="bg-white border my-3 p-3 rounded-sm w-full flex">
         <div>
           <button className="bg-primaryYellow p-2 mx-2 rounded-md px-3 hover:bg-yellow-500" onClick={e => setModalVisible(true)}>
             <i className="pi pi-plus mx-2 font-medium"></i>
@@ -101,20 +116,21 @@ const Usuarios = () => {
           </button>
           <Link
             className="px-4 p-2 mx-2 rounded-md text-red-500 border-2 border-red-500 hover:bg-red-500 hover:text-white transition duration-300 ease-in-out"
-            to="/home/config/usuarios/inactivos"
-          >
+            to="/home/config/usuarios/inactivos">
             Inactivos
           </Link>
           <ModalAgregarUsuarios visible={modalVisible} onClose={toggleModal} />
         </div>
-        <span className="p-input-icon-left ml-auto">
+        <span className="p-input-icon-left ml-auto border rounded-md">
           <i className="pi pi-search" />
-          <InputText className="h-10 pl-8" placeholder="Buscar" onChange={e => handleSearch(e)} value={searchTerm} />
+          <InputText className="h-10 pl-8 rounded-md" placeholder="Buscar" onChange={e => handleSearch(e)} value={searchTerm} />
         </span>
       </div>
 
       <div className="card">
         <DataTable
+          className="custom-datatable"
+          stripedRows
           value={filteredData}
           paginator={true}
           rows={5}
@@ -146,7 +162,7 @@ const Usuarios = () => {
                   tooltip="Eliminar"
                   className="p-button-rounded p-button-danger p-mr-2"
                   tooltipOptions={{ position: "top" }}
-                  onClick={e => confirmDeleteProduct(e, rowData)}
+                  onClick={e => confirmDeleteUsuario(e, rowData)}
                 >
                   {Trash_Icono}
                 </Button>
@@ -155,6 +171,7 @@ const Usuarios = () => {
                   tooltip="Restablecer"
                   className="p-button-rounded p-button-info"
                   tooltipOptions={{ position: "top" }}
+                  onClick={e => confirmRestablecer(e, rowData)}
                 >
                   {Key_Icono}
                 </Button>

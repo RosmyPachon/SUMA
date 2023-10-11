@@ -1,29 +1,29 @@
 import { useEffect, useState, createContext } from "react";
 import conexionCliente from "../config/ConexionCliente";
 import { useLocation } from "react-router-dom";
+import { generarID } from "../helpers/utils";
+// import { Resend } from 'resend';
+import { MailClave } from "../components/Mails/MailClave";
 
 const UsuariosContext = createContext();
 
 const UsuariosProvider = ({ children }) => {
   const [dataUsuarios, setDataUsuarios] = useState([])
-  const [eliminarUsuario, setEliminarUsuario] = useState({})
-  
+  const [usuarioState, setUsuarioState] = useState({})
 
   const location = useLocation()
 
   useEffect(() => {
     const getUsuarios = async () => {
       const token = localStorage.getItem('token')
-      
+
       const config = {
         headers: {
           "Content-Type": "apllication/json",
           Authorization: `Bearer ${token}`
         }
       }
-      
       const estado = location.pathname.includes('inactivos') ? 2 : 1
-
 
       try {
         const { data } = await conexionCliente(`/usuarios?estado=${estado}`, config)
@@ -36,10 +36,10 @@ const UsuariosProvider = ({ children }) => {
   }, [location.pathname])
 
   const eliminarUsuarioProvider = async () => {
-    if (eliminarUsuario.id_usuario) {
+    if (usuarioState.id_usuario) {
       const token = localStorage.getItem('token')
       let estadoUsuario = 0
-      if (eliminarUsuario.estado_usuario == "ACTIVO") {
+      if (usuarioState.estado_usuario == "ACTIVO") {
         estadoUsuario = 2
       } else {
         estadoUsuario = 1
@@ -51,19 +51,81 @@ const UsuariosProvider = ({ children }) => {
         }
       }
       try {
-        const { data } = await conexionCliente.delete(`/usuarios/${eliminarUsuario.id_usuario}?estado=${estadoUsuario}`, config)
+        const { data } = await conexionCliente.delete(`/usuarios/${usuarioState.id_usuario}?estado=${estadoUsuario}`, config)
         console.log(data)
         if (data.error) {
           console.log(data.message)
         }
 
-        const usuarioActualizados = dataUsuarios.filter(usuario => usuario.id_usuario !== eliminarUsuario.id_usuario)
+        const usuarioActualizados = dataUsuarios.filter(usuario => usuario.id_usuario !== usuarioState.id_usuario)
         setDataUsuarios(usuarioActualizados)
       } catch (error) {
         console.log(error)
       }
     }
   }
+
+  const restaurarUsuarioProvider = async () => {
+    if (usuarioState.id_usuario) {
+      const token = localStorage.getItem('token')
+      let estadoUsuario = 0
+      if (usuarioState.estado_usuario == "INACTIVO") {
+        estadoUsuario = 1
+      } else {
+        estadoUsuario = 2
+      }
+      const config = {
+        headers: {
+          "Content-Type": "apllication/json",
+          Authorization: `Bearer ${token}`
+        }
+      }
+      try {
+        const { data } = await conexionCliente.delete(`/usuarios/${usuarioState.id_usuario}?estado=${estadoUsuario}`, config)
+        console.log(data)
+        if (data.error) {
+          console.log(data.message)
+        }
+
+        const usuarioActualizados = dataUsuarios.filter(usuario => usuario.id_usuario !== usuarioState.id_usuario)
+        setDataUsuarios(usuarioActualizados)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+  }
+
+  const restablecerUsuarioProvider = async () => {
+    const token = localStorage.getItem('token')
+
+    const config = {
+      headers: {
+        "Content-Type": "apllication/json",
+        Authorization: `Bearer ${token}`
+      }
+    }
+    let claveHash = generarID()
+  
+    const body = {
+      "clave": claveHash
+    }
+    try {
+      const { data } = await conexionCliente.post(`/usuarios/cambiar-clave/${usuarioState.id_usuario}`, body, config)
+      // console.log(data)
+
+      if (data.error) {
+        console.log(data.message)
+      }
+
+
+      console.log(data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  // ------------------------------------------------------------------------------------------------------------------------------------------
+
   const [UsuariosAgg, setUsuariosAgg] = useState({
     nombre: "",
     usuario: "",
@@ -158,14 +220,14 @@ const UsuariosProvider = ({ children }) => {
 
   const guardarUsuario = async (formData) => {
     const token = localStorage.getItem("token");
-  
+
     const config = {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     };
-  
+
     try {
       // Realiza la solicitud POST a la API para guardar la información del usuario
       const response = await conexionCliente.post("/usuarios", formData, config);
@@ -177,9 +239,9 @@ const UsuariosProvider = ({ children }) => {
     }
   };
 
-   // -----------------validaciones-----------------------------
+  // -----------------validaciones-----------------------------
 
-   const handleChangeUsuario = (e) => {
+  const handleChangeUsuario = (e) => {
     const { name, value } = e.target;
     setUsuariosAgg({ ...UsuariosAgg, [name]: value });
     // setUsuariosAgg({ ...UsuariosAgg, [name]: value });
@@ -220,8 +282,8 @@ const UsuariosProvider = ({ children }) => {
     //   }
     // }
 
-    
-    
+
+
   };
 
 
@@ -236,14 +298,16 @@ const UsuariosProvider = ({ children }) => {
         perfilesAgg,
         obtenerModulos,
         modulosAgg,
-        setModulosAgg, 
+        setModulosAgg,
         permisosAgg,
         guardarUsuario,
         errors,
         setErrors,
-        setEliminarUsuario, 
-        eliminarUsuario, 
-        eliminarUsuarioProvider 
+        setUsuarioState,
+        usuarioState,
+        eliminarUsuarioProvider,
+        restaurarUsuarioProvider,
+        restablecerUsuarioProvider
       }}
     >
       {children}

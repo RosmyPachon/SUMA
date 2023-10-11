@@ -6,9 +6,9 @@ import { MultiSelect } from "primereact/multiselect";
 import { Toast } from 'primereact/toast';
 
 import { Button } from "primereact/button";
-import useUsuarios from '../hooks/useUsuarios'
-import { Restore_Icono } from "../../public/Icons/Iconos";
-import Confirmar from "../components/Modales/Confirmar";
+import useUsuarios from '../../hooks/useUsuarios'
+import { Restore_Icono } from "../../../public/Icons/Iconos";
+import Confirmar from "../../components/Modales/Confirmar";
 
 
 const UsuariosInactivos = () => {
@@ -16,16 +16,16 @@ const UsuariosInactivos = () => {
 
   const [modalEliminar, setModalEliminar] = useState(false)
 
-  const { dataUsuarios, setEliminarUsuario } = useUsuarios()
+  const { dataUsuarios, setUsuarioState } = useUsuarios()
 
   const redirectToPreviousPage = () => {
     window.history.back();
   };
 
-  const modalConfirmRestaurar = (e, usuario) => {
+  const confirmRestaurarUsuario = (e, usuario) => {
     e.preventDefault();
     setModalEliminar(true);
-    setEliminarUsuario(usuario);
+    setUsuarioState(usuario);
   };
 
   const columns = [
@@ -70,7 +70,7 @@ const UsuariosInactivos = () => {
   const header = <MultiSelect value={visibleColumns} options={columns} optionLabel="header" onChange={onColumnToggle} className="w-full sm:w-20rem" display="chip" />;
 
   const mensajeRestaurado = () => {
-    toast.current.show({ severity: 'success', detail: 'El registro se ha activado correctamente. ', life: 5000 });
+    toast.current.show({ severity: 'success', detail: 'El registro se ha activado correctamente. ', life: 1500 });
   }
 
   return (
@@ -83,21 +83,23 @@ const UsuariosInactivos = () => {
       {modalEliminar ? <Confirmar modalEliminar={modalEliminar} setModalEliminar={setModalEliminar} mensajeRestaurado={mensajeRestaurado} /> : ""}
 
 
-      <div className="bg-neutral-100 my-3 p-3 rounded-md w-full flex">
+      <div className="bg-white border my-3 p-3 rounded-sm w-full flex">
         <div>
           <button onClick={redirectToPreviousPage} className="bg-primaryYellow p-2 mx-2 rounded-md px-3 hover:bg-yellow-500">
             <i className="pi pi-replay mx-2 font-medium"></i>
             Regresar
           </button>
         </div>
-        <span className="p-input-icon-left ml-auto">
+        <span className="p-input-icon-left ml-auto border rounded-md">
           <i className="pi pi-search " />
-          <InputText className="h-10 pl-8" placeholder="Buscar" onChange={e => handleSearch(e)} value={searchTerm} />
+          <InputText className="h-10 pl-8 rounded-md" placeholder="Buscar" onChange={e => handleSearch(e)} value={searchTerm} />
         </span>
       </div>
 
       <div className="card">
         <DataTable
+          className="custom-datatable"
+          stripedRows
           value={filteredData}
           paginator={true}
           rows={5}
@@ -122,7 +124,7 @@ const UsuariosInactivos = () => {
                   tooltip="Restaurar"
                   tooltipOptions={{ position: "top" }}
                   className="p-button-rounded p-mr-2"
-                  onClick={e => modalConfirmRestaurar(e, rowData)}
+                  onClick={e => confirmRestaurarUsuario(e, rowData)}
                 >
                   {Restore_Icono}
                 </Button>

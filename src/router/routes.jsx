@@ -1,6 +1,6 @@
 import Login from "../Pages/Login";
 import Usuario from "../Pages/Usuarios/Usuarios";
-import UsuarioInactivos from "../Pages/UsuariosInactivos";
+import UsuarioInactivos from "../Pages/Usuarios/UsuariosInactivos";
 
 const routesUsuario = [
   {

@@ -22,7 +22,7 @@ const Sidebar = () => {
     setOpen(!open);
   };
   return (
-    <div className="h-full flex flex-col border-r shadow-sm">
+    <div className="h-full flex flex-col border-r shadow-sm bg-white">
       <button
         className="fixed lg:hidden z-90 bottom-10 right-8 bg-primaryYellow w-10 h-10 rounded-full drop-shadow-lg flex justify-center items-center text-white text-4xl hover:bg-amber-500 duration-300"
         onClick={toggleSidebar}
