@@ -4,13 +4,14 @@ import { Toast } from 'primereact/toast';
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
-import { Key_Icono, Trash_Icono, Edit_Icono } from "../../public/Icons/Iconos";
+import { Key_Icono, Trash_Icono, Edit_Icono } from "../../../public/Icons/Iconos";
 
-import Confirmar from "../components/Modales/Confirmar";
+import Confirmar from "../../components/Modales/Confirmar";
 import { InputText } from 'primereact/inputtext';
 import { Link } from 'react-router-dom';
 import { MultiSelect } from 'primereact/multiselect';
-import useUsuarios from '../hooks/useUsuarios';
+import useUsuarios from '../../hooks/useUsuarios';
+import ModalAgregarUsuarios from '../../components/Usuarios/ModalAgregarUsuarios'
 
 const Usuarios = () => {
   const toast = useRef(null);
@@ -78,6 +79,12 @@ const Usuarios = () => {
   }, [dataUsuarios]);
 
 
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const toggleModal = () => {
+    setModalVisible(!modalVisible);
+  };
+
   return (
     <div className="w-5/6">
       <Toast ref={toast} />
@@ -88,7 +95,7 @@ const Usuarios = () => {
       {modalEliminar ? <Confirmar modalEliminar={modalEliminar} setModalEliminar={setModalEliminar} mensajeEliminado={mensajeEliminado} /> : ""}
       <div className="bg-neutral-100 my-3 p-3 rounded-md w-full flex">
         <div>
-          <button className="bg-primaryYellow p-2 mx-2 rounded-md px-3 hover:bg-yellow-500">
+          <button className="bg-primaryYellow p-2 mx-2 rounded-md px-3 hover:bg-yellow-500" onClick={e => setModalVisible(true)}>
             <i className="pi pi-plus mx-2 font-medium"></i>
             Agregar
           </button>
@@ -98,6 +105,7 @@ const Usuarios = () => {
           >
             Inactivos
           </Link>
+          <ModalAgregarUsuarios visible={modalVisible} onClose={toggleModal} />
         </div>
         <span className="p-input-icon-left ml-auto">
           <i className="pi pi-search" />
