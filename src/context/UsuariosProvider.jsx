@@ -1,8 +1,6 @@
-import { useEffect, useState, createContext, useRef } from "react";
+import { useEffect, useState, createContext } from "react";
 import conexionCliente from "../config/ConexionCliente";
 import { useLocation } from "react-router-dom";
-import { genLlaveAleatoria } from "../helpers/utils";
-// import { Resend } from 'resend';
 
 const UsuariosContext = createContext();
 
@@ -96,23 +94,21 @@ const UsuariosProvider = ({ children }) => {
 
   const restablecerUsuarioProvider = async () => {
     const token = localStorage.getItem('token')
-
     const config = {
       headers: {
         "Content-Type": "apllication/json",
         Authorization: `Bearer ${token}`,
       }
     }
-
-
     try {
-
       const { data } = await conexionCliente.patch(`usuarios/cambiar_clave/${usuarioState.id_usuario}`, {}, config)
 
       if (data.error) {
         console.log(data.message)
       }
       console.log(data)
+
+
     } catch (error) {
       console.log(error)
     }

@@ -1,4 +1,5 @@
 import Login from "../Pages/Login";
+import ResetearContraseñaUsuario from "../Pages/Usuarios/ResetearContraseñaUsuario";
 import Usuario from "../Pages/Usuarios/Usuarios";
 import UsuarioInactivos from "../Pages/Usuarios/UsuariosInactivos";
 
@@ -20,6 +21,12 @@ const routesUsuario = [
     route: "prueba",
     component: <Login />,
     key: 3
+  },
+  {
+    name: "Resetear Contraseña",
+    route: "auth/resetear",
+    component: <ResetearContraseñaUsuario />,
+    key: 4
   }
 ];
 

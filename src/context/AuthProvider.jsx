@@ -27,10 +27,14 @@ const AuthProvider = ({ children }) => {
 
       try {
         const { data } = await conexionCliente('/usuarios/perfil', config)
-        console.log(data)
         setAuthUsuario(data)
+        if (data.cm_clave) {
+          console.log("data")
+          navigate('/auth/resetear')
+        }
         setAuthModulos(JSON.parse(localStorage.getItem('modulos')));
         navigate('/home')
+
       } catch (error) {
         setAuthUsuario({})
         navigate('/')
