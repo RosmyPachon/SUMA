@@ -3,7 +3,6 @@ import conexionCliente from "../config/ConexionCliente";
 import { useLocation } from "react-router-dom";
 import { generarID } from "../helpers/utils";
 // import { Resend } from 'resend';
-import { MailClave } from "../components/Mails/MailClave";
 
 const UsuariosContext = createContext();
 
@@ -164,7 +163,7 @@ const UsuariosProvider = ({ children }) => {
 
       try {
         const { data } = await conexionCliente(`/usuarios?estado=1`, config);
-        console.log(data);
+        // console.log(data);
         setDataUsuarios(data);
         // navigate('/home')
       } catch (error) {
@@ -231,7 +230,7 @@ const UsuariosProvider = ({ children }) => {
       const response = await conexionCliente.post("/usuarios", formData, config);
       console.log("Información guardada con éxito:", response);
       // toast.current.show({severity:'success', summary: 'Success', detail:'Registro guardado con exito', life: 3000});
-      return response.data; // Puedes devolver los datos guardados si es necesario
+      setDataUsuarios([...dataUsuarios, response.data ]); // Puedes devolver los datos guardados si es necesario
     } catch (error) {
       console.error("Error al guardar la información:", error);
       throw error; // Puedes lanzar una excepción en caso de error
