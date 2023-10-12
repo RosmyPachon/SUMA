@@ -107,7 +107,7 @@ const Usuarios = () => {
         <h1 className="text-3xl">Usuarios</h1>
         <i className="pi pi-user" style={{ fontSize: "2rem" }}></i>
       </div>
-      {modalEliminar ? <Confirmar modalEliminar={modalEliminar} setModalEliminar={setModalEliminar} mensajeEliminado={mensajeEliminado} confirmRestablecer={confirmRestablecer} botonUsuario={botonUsuario} mensajeRestablecido={mensajeRestablecido} /> : ""}
+      {modalEliminar ? <Confirmar modalEliminar={modalEliminar} setModalEliminar={setModalEliminar} mensajeEliminado={mensajeEliminado}  botonUsuario={botonUsuario} mensajeRestablecido={mensajeRestablecido} /> : ""}
       <div className="bg-white border my-3 p-3 rounded-sm w-full flex">
         <div>
           <button className="bg-primaryYellow p-2 mx-2 rounded-md px-3 hover:bg-yellow-500" onClick={e => setModalVisible(true)}>

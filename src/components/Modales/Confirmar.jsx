@@ -4,7 +4,7 @@ import { Button } from "primereact/button";
 import useUsuarios from '../../hooks/useUsuarios'
 
 
-const Eliminar = ({ modalEliminar, setModalEliminar, mensajeEliminado, mensajeRestaurado, confirmRestablecer, botonUsuario, mensajeRestablecido }) => {
+const Eliminar = ({ modalEliminar, setModalEliminar, mensajeEliminado, mensajeRestaurado, botonUsuario, mensajeRestablecido }) => {
 
 
     const { eliminarUsuarioProvider, usuarioState, restaurarUsuarioProvider, restablecerUsuarioProvider } = useUsuarios()

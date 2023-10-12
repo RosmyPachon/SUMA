@@ -1,9 +1,8 @@
 import { useEffect, useState, createContext, useRef } from "react";
 import conexionCliente from "../config/ConexionCliente";
 import { useLocation } from "react-router-dom";
-import { generarID } from "../helpers/utils";
+import { genLlaveAleatoria } from "../helpers/utils";
 // import { Resend } from 'resend';
-import { MailClave } from "../components/Mails/MailClave";
 
 const UsuariosContext = createContext();
 
@@ -101,23 +100,18 @@ const UsuariosProvider = ({ children }) => {
     const config = {
       headers: {
         "Content-Type": "apllication/json",
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       }
     }
-    let claveHash = generarID()
-  
-    const body = {
-      "clave": claveHash
-    }
+
+
     try {
-      const { data } = await conexionCliente.post(`/usuarios/cambiar-clave/${usuarioState.id_usuario}`, body, config)
-      // console.log(data)
+
+      const { data } = await conexionCliente.patch(`usuarios/cambiar_clave/${usuarioState.id_usuario}`, {}, config)
 
       if (data.error) {
         console.log(data.message)
       }
-
-
       console.log(data)
     } catch (error) {
       console.log(error)
@@ -133,7 +127,7 @@ const UsuariosProvider = ({ children }) => {
     clave: "",
     claverepetida: "",
   });
-  
+
   const [errors, setErrors] = useState({
     nombre: '',
     usuario: '',
@@ -141,7 +135,7 @@ const UsuariosProvider = ({ children }) => {
     clave: '',
     claverepetida: '',
   });
-  
+
   const [perfilesAgg, setPerfilesAgg] = useState([]);
   const [modulosAgg, setModulosAgg] = useState([]);
   const [permisosAgg, setPermisosAgg] = useState([]);
