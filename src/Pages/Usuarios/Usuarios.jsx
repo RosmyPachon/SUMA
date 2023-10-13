@@ -27,7 +27,7 @@ const Usuarios = () => {
   const mensajeRestablecido = () => {
     toast.current.show({ severity: 'success', detail: 'Se ha restablecido la clave del usuario correctamente. ', life: 1500 });
   }
- 
+
 
   const columns = [
     { field: "id_usuario", header: "ID" },
@@ -93,7 +93,6 @@ const Usuarios = () => {
     setFilteredData(dataUsuarios);
   }, [dataUsuarios]);
 
-
   const [modalVisible, setModalVisible] = useState(false);
 
   const toggleModal = () => {
@@ -107,13 +106,17 @@ const Usuarios = () => {
         <h1 className="text-3xl">Usuarios</h1>
         <i className="pi pi-user" style={{ fontSize: "2rem" }}></i>
       </div>
-      {modalEliminar ? <Confirmar modalEliminar={modalEliminar} setModalEliminar={setModalEliminar} mensajeEliminado={mensajeEliminado}  botonUsuario={botonUsuario} mensajeRestablecido={mensajeRestablecido} /> : ""}
-      <div className="bg-white border my-3 p-3 rounded-sm w-full flex">
+      {modalEliminar ? <Confirmar modalEliminar={modalEliminar} setModalEliminar={setModalEliminar} mensajeEliminado={mensajeEliminado} botonUsuario={botonUsuario} mensajeRestablecido={mensajeRestablecido} /> : ""}
+      
+      <div className="bg-white border my-3 p-3 rounded-sm w-full flex flex-wrap gap-3">
         <div>
           <button className="bg-primaryYellow p-2 mx-2 rounded-md px-3 hover:bg-yellow-500" onClick={e => setModalVisible(true)}>
             <i className="pi pi-plus mx-2 font-medium"></i>
             Agregar
           </button>
+        </div>
+
+        <div className="h-full flex justify-center items-center">
           <Link
             className="px-4 p-2 mx-2 rounded-md text-red-500 border-2 border-red-500 hover:bg-red-500 hover:text-white transition duration-300 ease-in-out"
             to="/home/config/usuarios/inactivos">
@@ -121,9 +124,10 @@ const Usuarios = () => {
           </Link>
           <ModalAgregarUsuarios visible={modalVisible} onClose={toggleModal} />
         </div>
-        <span className="p-input-icon-left ml-auto border rounded-md">
+
+        <span className="p-input-icon-left sm:ml-auto md:ml-auto  lg:ml-auto  xl:ml-auto border rounded-md">
           <i className="pi pi-search" />
-          <InputText className="h-10 pl-8 rounded-md" placeholder="Buscar" onChange={e => handleSearch(e)} value={searchTerm} />
+          <InputText className="h-10 pl-8 w-auto rounded-md" placeholder="Buscar" onChange={e => handleSearch(e)} value={searchTerm} />
         </span>
       </div>
 

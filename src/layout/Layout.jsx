@@ -17,6 +17,13 @@ const Layout = () => {
     }
     funcionModal()
 
+    let bloqueLayout = (<div className="flex h-screen">
+        <Sidebar />
+        <main className="flex justify-center flex-1 md:h-screen overflow-y-scroll">
+            <Outlet />
+        </main>
+    </div>)
+
     const switchPagina = () => {
         let contentPagina = ""
 
@@ -26,21 +33,11 @@ const Layout = () => {
                 break;
 
             case 3:
-                contentPagina = <div className="flex h-screen">
-                    <Sidebar />
-                    <main className="flex justify-center items-center flex-1">
-                        <Outlet />
-                    </main>
-                </div>;
+                contentPagina = bloqueLayout
                 break;
 
             default:
-                contentPagina = <div className="flex h-screen">
-                    <Sidebar />
-                    <main className="flex justify-center items-center flex-1">
-                        <Outlet />
-                    </main>
-                </div>;
+                contentPagina = bloqueLayout
                 break;
         }
         return contentPagina

@@ -1,12 +1,18 @@
 import { useEffect, useState, createContext } from "react";
 import conexionCliente from "../config/ConexionCliente";
 import { useLocation } from "react-router-dom";
+import useAuth from '../hooks/useAuth'
+
 
 const UsuariosContext = createContext();
 
 const UsuariosProvider = ({ children }) => {
   const [dataUsuarios, setDataUsuarios] = useState([])
   const [usuarioState, setUsuarioState] = useState({})
+  const { authUsuario } = useAuth()
+
+
+  const [contraseña, setConstraseña] = useState("")
 
   const location = useLocation()
 
@@ -16,7 +22,7 @@ const UsuariosProvider = ({ children }) => {
 
       const config = {
         headers: {
-          "Content-Type": "apllication/json",
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
         }
       }
@@ -43,7 +49,7 @@ const UsuariosProvider = ({ children }) => {
       }
       const config = {
         headers: {
-          "Content-Type": "apllication/json",
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
         }
       }
@@ -73,7 +79,7 @@ const UsuariosProvider = ({ children }) => {
       }
       const config = {
         headers: {
-          "Content-Type": "apllication/json",
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
         }
       }
@@ -96,7 +102,7 @@ const UsuariosProvider = ({ children }) => {
     const token = localStorage.getItem('token')
     const config = {
       headers: {
-        "Content-Type": "apllication/json",
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       }
     }
@@ -113,6 +119,31 @@ const UsuariosProvider = ({ children }) => {
       console.log(error)
     }
   }
+
+  const restablecerContraseñaProvider = async () => {
+    const token = localStorage.getItem('token')
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      }
+    }
+    const body = {
+      "clave":`${contraseña}`
+    }
+    try {
+      const { data } = await conexionCliente.patch(`usuarios/restablecer_clave/${authUsuario.id_usuario}`, body, config)
+      if (data.error) {
+        return console.log(data.message)
+      }
+      console.log(data)
+
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+
 
   // ------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -249,7 +280,10 @@ const UsuariosProvider = ({ children }) => {
         usuarioState,
         eliminarUsuarioProvider,
         restaurarUsuarioProvider,
-        restablecerUsuarioProvider
+        restablecerUsuarioProvider,
+        restablecerContraseñaProvider,
+        contraseña, 
+        setConstraseña
       }}
     >
       {children}

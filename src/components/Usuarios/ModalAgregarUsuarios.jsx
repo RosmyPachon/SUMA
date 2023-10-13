@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { Steps } from 'primereact/steps';
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
@@ -9,6 +10,7 @@ import { Toast } from "primereact/toast";
 import { useRef } from "react";
 
 const ModalAgregarUsuarios = ({ visible, onClose }) => {
+
 
 
   const toast = useRef(null);
@@ -38,7 +40,7 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
   const [step, setStep] = useState(1);
 
 
-  const   handleGuardar = async () => {
+  const handleGuardar = async () => {
     try {
       const formData = {
         nombre_completo: UsuariosAgg.nombre, //nombre_completo
@@ -58,14 +60,14 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
         console.error("No se puede guardar si algún perfil está seleccionado");
         return;
       }
-  
+
       // Llama a la función de guardarUsuario y pasa el formData
       const response = await guardarUsuario(formData);
 
       if (response) {
         onClose(); // Cierra el modal
         setStep(1); // Vuelve al primer paso
-      
+
         // Limpia los campos del formulario
         setUsuariosAgg({
           nombre: "",
@@ -77,7 +79,7 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
         setPerfilesSeleccionados([]);
         setModulosSeleccionados([]);
         setPermisosPorModulo([]);
-        
+
         // Muestra el mensaje de éxito
         mensajeGuardado();
       }
@@ -115,7 +117,7 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
         errors.perfiles = "Debes seleccionar al menos un perfil";
       }
     }
-    
+
 
     // Si hay errores, establece el estado de errores y no avances al siguiente paso
     if (Object.keys(errors).length > 0) {
@@ -144,7 +146,7 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
     <div>
       {step > 1 && (
         <Button
-          className="p-button-text bg-gray-300 p-2 mx-2 rounded-md px-3 hover:bg-gray-400"
+          className="p-button-text bg-gray-300 p-2 mx-2 rounded-md px-3 hover:bg-gray-400 font-semibold"
           onClick={handlePrev}
         >
           Atrás
@@ -152,14 +154,14 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
       )}
       {step < 3 ? (
         <Button
-          className="bg-primaryYellow p-2 mx-2 rounded-md px-3 hover:bg-yellow-500"
+          className="bg-primaryYellow p-2 mx-2 rounded-md px-3 hover:bg-yellow-500 font-semibold"
           onClick={handleNext}
         >
           Siguiente
         </Button>
       ) : (
         <Button
-          className="bg-primaryYellow p-2 mx-2 rounded-md px-3 hover:bg-yellow-500"
+          className="bg-primaryYellow p-2 mx-2 rounded-md px-3 hover:bg-yellow-500 font-semibold"
           onClick={handleGuardar}
         >
           Guardar
@@ -249,26 +251,35 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
 
   return (
     <Dialog
-      header="Agregar Usuario"
+      header={<h1>Agregar Usuario</h1>}
       visible={visible}
-      style={{ width: "40vw" }}
+      // style={{width:"40vw"}}
+      className="w-full sm:w-full md:w-1/2  lg:w-1/2  xl:w-1/2 "
       onHide={onClose}
       footer={footerContent}
     >
       <div>
-        <Toast ref={toast}/>
+        <Toast ref={toast} />
+
+        <Steps model={[
+          { label: 'Informacion' },
+          { label: 'Perfiles' },
+          { label: 'Permisos' },
+        ]}
+          activeIndex={step - 1} className="custom-stepper p-4 hidden md:block" />
+          <hr className="mb-4"/>
+
         {step === 1 && (
-          <div className="flex flex-col">
+          <div className="flex flex-col pt-3 flex-wrap sm:w-full">
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col">
-                <label className="text-gray-600">Nombre completo *</label>
+                <label className="text-gray-600 pb-2 font-semibold">Nombre completo <span className="font-bold text-red-00">*</span></label>
                 <InputText
                   value={UsuariosAgg.nombre}
                   type="text"
                   name="nombre"
-                  className={`border-1 p-1 rounded-md ${
-                    errors.nombre ? "border-red-500" : "border-gray-300"
-                  }`}
+                  className={`border-1 h-10 rounded-md px-3 py-2 ${errors.nombre ? "border-red-500" : "border-gray-300"
+                    }`}
                   onChange={(e) => handleChangeUsuario(e)}
                 />
                 {errors.nombre && (
@@ -278,14 +289,13 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
                 )}
               </div>
               <div className="flex flex-col">
-                <label className="text-gray-600">Usuario *</label>
+                <label className="text-gray-600 pb-2 font-semibold">Usuario <span className="font-bold text-red-00">*</span></label>
                 <InputText
                   value={UsuariosAgg.usuario}
                   type="text"
                   name="usuario"
-                  className={`border-1 p-1 rounded-md ${
-                    errors.usuario ? "border-red-500" : "border-gray-300"
-                  }`}
+                  className={`border-1 p-1 rounded-md h-10 px-3 py-2 ${errors.usuario ? "border-red-500" : "border-gray-300"
+                    }`}
                   onChange={(e) => handleChangeUsuario(e)}
                 />
                 {errors.usuario && (
@@ -295,14 +305,13 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
                 )}
               </div>
               <div className="flex flex-col col-span-2">
-                <label className="text-gray-600">Correo *</label>
+                <label className="text-gray-600 pb-2 font-semibold">Correo <span className="font-bold text-red-00">*</span></label>
                 <InputText
                   value={UsuariosAgg.correo}
                   type="email"
                   name="correo"
-                  className={`border-1 p-1 rounded-md ${
-                    errors.correo ? "border-red-500" : "border-gray-300"
-                  }`}
+                  className={`border-1 p-1 rounded-md h-10 px-3 py-2 ${errors.correo ? "border-red-500" : "border-gray-300"
+                    }`}
                   onChange={(e) => handleChangeUsuario(e)}
                 />
                 {errors.correo && (
@@ -311,14 +320,13 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
               </div>
 
               <div className="flex flex-col">
-                <label className="text-gray-600">Contraseña *</label>
+                <label className="text-gray-600 pb-2 font-semibold">Contraseña <span className="font-bold text-red-00">*</span></label>
                 <InputText
                   value={UsuariosAgg.clave}
                   type="password"
                   name="clave"
-                  className={`border-1 p-1 rounded-md ${
-                    errors.clave ? "border-red-500" : "border-gray-300"
-                  }`}
+                  className={`border-1 p-1 rounded-md h-10 px-3 py-2 ${errors.clave ? "border-red-500" : "border-gray-300"
+                    }`}
                   onChange={(e) => handleChangeUsuario(e)}
                 />
                 {errors.clave && (
@@ -326,14 +334,13 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
                 )}
               </div>
               <div className="flex flex-col">
-                <label className="text-gray-600">Repetir Contraseña *</label>
+                <label className="text-gray-600 pb-2 font-semibold">Repetir Contraseña <span className="font-bold text-red-00">*</span></label>
                 <InputText
                   value={UsuariosAgg.claverepetida}
                   type="password"
                   name="claverepetida"
-                  className={`border-1 p-1 rounded-md ${
-                    errors.claverepetida ? "border-red-500" : "border-gray-300"
-                  }`}
+                  className={`border-1 p-1 rounded-md h-10 px-3 py-2 ${errors.claverepetida ? "border-red-500" : "border-gray-300"
+                    }`}
                   onChange={(e) => handleChangeUsuario(e)}
                 />
                 {errors.claverepetida && (
@@ -345,30 +352,29 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
         )}
         {step === 2 && (
           <div>
-            <h1>Perfiles</h1>
+            <h1 className="text-lg">Perfiles</h1>
             <div className="p-mx-auto mt-3 p-datatable">
-              <DataTable value={perfilesAgg}>
-                <Column field="id_perfil" header="ID" />
+              <DataTable value={perfilesAgg} className="custom-datatable mx-4">
                 <Column field="nombre_perfil" header="Nombre" />
                 <Column
                   field="col1"
                   header="Check"
                   body={checkboxPerfil}
                   style={{ width: "3em" }}
-                  />
+                />
               </DataTable>
-                  {errors.perfiles && (
-                   <div className="text-red-600 mt-2">{errors.perfiles}</div>
-                 )}
-             
+              {errors.perfiles && (
+                <div className="text-red-600 mt-2">{errors.perfiles}</div>
+              )}
+
             </div>
           </div>
         )}
         {step === 3 && (
-          <div>
-            <h1>Modulos</h1>
+          <div className="">
+            <h1  className="text-lg">Modulos</h1>
             <div className="p-mx-auto mt-3 p-datatable">
-              <DataTable value={modulosAgg}>
+              <DataTable value={modulosAgg} className="custom-datatable">
                 <Column field="id_modulo" header="ID" />
                 <Column field="nombre_modulo" header="Nombre del Módulo" />
 
@@ -382,6 +388,7 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
                           <input
                             key={index}
                             type="checkbox"
+                            style={{accentColor:"yellow"}}
                             data-idrolmodulo={r.id_rol_modulo}
                             checked={permisosPorModulo.some(
                               (permiso) => permiso.id_rol == r.id_rol_modulo

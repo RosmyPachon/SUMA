@@ -25,7 +25,7 @@ const Eliminar = ({ modalEliminar, setModalEliminar, mensajeEliminado, mensajeRe
         setModalEliminar(false);
     };
 
-    const clickEliminarUsuario = () => {
+    const clickModalUsuario = () => {
         if (variableModal == 1) {
             eliminarUsuarioProvider()
             setModalEliminar(false);
@@ -66,7 +66,7 @@ const Eliminar = ({ modalEliminar, setModalEliminar, mensajeEliminado, mensajeRe
             <Button label="Cancelar" onClick={esconderModalEliminar} className='px-4 p-2 mx-2 rounded-md font-semibold 
             bg-neutralGray hover:bg-hoverGray transition duration-300 ease-in-out' />
             <Button label={textoModal().btn}
-                onClick={clickEliminarUsuario} className="px-4 p-2 mx-2 rounded-md font-semibold
+                onClick={clickModalUsuario} className="px-4 p-2 mx-2 rounded-md font-semibold
             bg-secundaryYellow hover:bg-primaryYellow transition duration-300 ease-in-out" />
         </React.Fragment>
     );

@@ -76,23 +76,24 @@ const UsuariosInactivos = () => {
   return (
     <div className="w-5/6">
       <Toast ref={toast} />
-      <div className="flex justify-center gap-x-4 m-2 p-3">
+      <div className="flex  justify-center gap-x-4 m-2 p-3">
         <h1 className="text-3xl">Usuarios Inactivos</h1>
         <i className="pi pi-user" style={{ fontSize: "2rem" }}></i>
       </div>
       {modalEliminar ? <Confirmar modalEliminar={modalEliminar} setModalEliminar={setModalEliminar} mensajeRestaurado={mensajeRestaurado} /> : ""}
 
 
-      <div className="bg-white border my-3 p-3 rounded-sm w-full flex">
+      <div className="bg-white border my-3 p-3 rounded-sm w-full flex flex-wrap gap-3">
         <div>
           <button onClick={redirectToPreviousPage} className="bg-primaryYellow p-2 mx-2 rounded-md px-3 hover:bg-yellow-500">
             <i className="pi pi-replay mx-2 font-medium"></i>
             Regresar
           </button>
         </div>
-        <span className="p-input-icon-left ml-auto border rounded-md">
-          <i className="pi pi-search " />
-          <InputText className="h-10 pl-8 rounded-md" placeholder="Buscar" onChange={e => handleSearch(e)} value={searchTerm} />
+
+        <span className="p-input-icon-left sm:ml-auto md:ml-auto  lg:ml-auto  xl:ml-auto border rounded-md">
+          <i className="pi pi-search" />
+          <InputText className="h-10 pl-8 w-auto rounded-md" placeholder="Buscar" onChange={e => handleSearch(e)} value={searchTerm} />
         </span>
       </div>
 
@@ -105,7 +106,6 @@ const UsuariosInactivos = () => {
           rows={5}
           header={header}
           emptyMessage="No se han encontrado resultados"
-          // stripedRows  
           rowsPerPageOptions={[5, 10, 25, 50]}
           paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
           currentPageReportTemplate="{first} to {last} of {totalRecords}"
