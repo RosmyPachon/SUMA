@@ -1,8 +1,6 @@
-import { useEffect, useState, createContext, useRef } from "react";
+import { useEffect, useState, createContext } from "react";
 import conexionCliente from "../config/ConexionCliente";
 import { useLocation } from "react-router-dom";
-import { generarID } from "../helpers/utils";
-// import { Resend } from 'resend';
 
 const UsuariosContext = createContext();
 
@@ -96,32 +94,26 @@ const UsuariosProvider = ({ children }) => {
 
   const restablecerUsuarioProvider = async () => {
     const token = localStorage.getItem('token')
-
     const config = {
       headers: {
         "Content-Type": "apllication/json",
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       }
     }
-    let claveHash = generarID()
-  
-    const body = {
-      "clave": claveHash
-    }
     try {
-      const { data } = await conexionCliente.post(`/usuarios/cambiar-clave/${usuarioState.id_usuario}`, body, config)
-      // console.log(data)
+      const { data } = await conexionCliente.patch(`usuarios/cambiar_clave/${usuarioState.id_usuario}`, {}, config)
 
       if (data.error) {
         console.log(data.message)
       }
-
-
       console.log(data)
+
+
     } catch (error) {
       console.log(error)
     }
   }
+  
 
   // ------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -132,7 +124,7 @@ const UsuariosProvider = ({ children }) => {
     clave: "",
     claverepetida: "",
   });
-  
+
   const [errors, setErrors] = useState({
     nombre: '',
     usuario: '',
@@ -140,7 +132,7 @@ const UsuariosProvider = ({ children }) => {
     clave: '',
     claverepetida: '',
   });
-  
+
   const [perfilesAgg, setPerfilesAgg] = useState([]);
   const [modulosAgg, setModulosAgg] = useState([]);
   const [permisosAgg, setPermisosAgg] = useState([]);
@@ -149,30 +141,6 @@ const UsuariosProvider = ({ children }) => {
   const handleChangeUsuario = (e) => {
     setUsuariosAgg({ ...UsuariosAgg, [e.target.name]: e.target.value });
   };
-
-  useEffect(() => {
-    const getUsuarios = async () => {
-      const token = localStorage.getItem("token");
-
-      const config = {
-        headers: {
-          "Content-Type": "apllication/json",
-          Authorization: `Bearer ${token}`,
-        },
-      };
-
-      try {
-        const { data } = await conexionCliente(`/usuarios?estado=1`, config);
-        // console.log(data);
-        setDataUsuarios(data);
-        // navigate('/home')
-      } catch (error) {
-        setDataUsuarios([]);
-        // navigate('/')
-      }
-    };
-    getUsuarios();
-  }, []);
 
   const obtenerPerfiles = async () => {
     const token = localStorage.getItem("token");

@@ -138,8 +138,10 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
         errors.perfiles = "Debes seleccionar al menos un perfil";
       }
     }
-    if (step === 3 && permisosPorModulo.length === 0) {
-      errors.modulos = "Debes seleccionar al menos un permiso de módulo";
+    if (step === 3) {
+      if (permisosPorModulo.length === 0) {
+        errors.modulos = "Debes seleccionar al menos un modulo";
+      }
     }
 
     if (Object.keys(errors).length > 0) {
@@ -382,6 +384,7 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
               <DataTable value={modulosAgg}>
                 <Column field="id_modulo" header="ID" />
                 <Column field="nombre_modulo" header="Nombre del Módulo" />
+                
 
                 {/* Columna para el permiso "Consultar" */}
                 <Column
@@ -470,11 +473,11 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
                   style={{ width: "5em" }}
                 />
               </DataTable>
-              <div className="text-center mt-2">
-                {errors.modulos && (
-                  <Message severity="warn" text={errors.modulos} />
-                )}
-              </div>
+          <div className="text-center mt-2">
+          {errors.modulos && (
+            <Message severity="warn" text={errors.modulos} />
+          )}
+        </div>
             </div>
           </div>
         )}

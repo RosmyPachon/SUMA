@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 
 import Login from "../Pages/Login.jsx";
@@ -7,6 +7,8 @@ import Layout from "../layout/Layout.jsx";
 import AuthLayouth from "../layout/AuthLayouth.jsx";
 import useAuth from "../hooks/useAuth.jsx";
 import routesUsuario from "./routes.jsx";
+import ResetearContraseñaUsuario from "../Pages/Usuarios/ResetearContraseñaUsuario.jsx";
+import Perfiles from "../Pages/Perfiles.jsx"
 
 let rutas = [];
 
@@ -38,11 +40,15 @@ const AppMain = () => {
       {/* Area Publica */}
       <Route path="/" element={<AuthLayouth />}>
         <Route index element={<Login />} />
+        <Route path="auth/resetear" element={<ResetearContraseñaUsuario />} />
       </Route>
 
       {/* Area Privada */}
+
+
       <Route path="/home" element={<Layout />}>
         <Route index element={<Home />} />
+        <Route path="config/perfiles" element={<Perfiles />} />
 
         {rutas.map((ruta) => (
           <Route
@@ -53,6 +59,9 @@ const AppMain = () => {
           />
         ))}
       </Route>
+
+
+
     </Routes>
   );
 };

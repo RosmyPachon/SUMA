@@ -4,7 +4,7 @@ import { Button } from "primereact/button";
 import useUsuarios from '../../hooks/useUsuarios'
 
 
-const Eliminar = ({ modalEliminar, setModalEliminar, mensajeEliminado, mensajeRestaurado, confirmRestablecer, botonUsuario, mensajeRestablecido }) => {
+const Eliminar = ({ modalEliminar, setModalEliminar, mensajeEliminado, mensajeRestaurado, botonUsuario, mensajeRestablecido }) => {
 
 
     const { eliminarUsuarioProvider, usuarioState, restaurarUsuarioProvider, restablecerUsuarioProvider } = useUsuarios()
@@ -21,7 +21,6 @@ const Eliminar = ({ modalEliminar, setModalEliminar, mensajeEliminado, mensajeRe
     }
     funcionModal()
 
-
     const esconderModalEliminar = () => {
         setModalEliminar(false);
     };
@@ -31,11 +30,11 @@ const Eliminar = ({ modalEliminar, setModalEliminar, mensajeEliminado, mensajeRe
             eliminarUsuarioProvider()
             setModalEliminar(false);
             mensajeEliminado()
-        } if(variableModal == 2) {
+        } if (variableModal == 2) {
             restaurarUsuarioProvider()
             setModalEliminar(false);
             mensajeRestaurado()
-        } if(variableModal == 3) {
+        } if (variableModal == 3) {
             restablecerUsuarioProvider()
             setModalEliminar(false);
             mensajeRestablecido()
@@ -62,7 +61,7 @@ const Eliminar = ({ modalEliminar, setModalEliminar, mensajeEliminado, mensajeRe
         return { mss, btn }
     }
 
-    const deleteProductDialogFooter = (        
+    const deleteProductDialogFooter = (
         <React.Fragment>
             <Button label="Cancelar" onClick={esconderModalEliminar} className='px-4 p-2 mx-2 rounded-md font-semibold 
             bg-neutralGray hover:bg-hoverGray transition duration-300 ease-in-out' />

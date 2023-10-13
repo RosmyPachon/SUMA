@@ -1,5 +1,13 @@
-import { useState, useRef, useEffect } from "react";
+import { useRef } from "react";
+import usePerfiles from "../hooks/usePerfiles";
+import { MultiSelect } from "primereact/multiselect";
+import ModalAgregarPerfil from "../components/Perfiles/ModalAgregarPerfil";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+
+
 import { Toast } from "primereact/toast";
+
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
@@ -7,23 +15,26 @@ import {
   Key_Icono,
   Trash_Icono,
   Edit_Icono,
-} from "../../../public/Icons/Iconos";
-import { InputText } from "primereact/inputtext";
+} from "../../public/Icons/Iconos";
+import { InputText } from "primereact/inputtext"
 
-import Confirmar from "../../components/Modales/Confirmar";
-import { Link } from "react-router-dom";
-import { MultiSelect } from "primereact/multiselect";
-import useUsuarios from "../../hooks/useUsuarios";
-import ModalAgregarUsuarios from "../../components/Usuarios/ModalAgregarUsuario";
-import AuthContext from "../../context/AuthProvider";
-import useAuth from "../../hooks/useAuth";
 
-const Usuarios = () => {
+const Perfiles = () => {
   const toast = useRef(null);
-  const { dataUsuarios, setUsuarioState } = useUsuarios();
+
+  const columns = [
+    { field: "id_perfil", header: "ID" },
+    { field: "nombre_perfil", header: "Nombre" },
+  ];
+
+  const { dataPerfiles, setDataPerfiles } = usePerfiles();
 
   const [modalEliminar, setModalEliminar] = useState(false);
-  const [botonUsuario, setBotonUsuario] = useState();
+  const [botonPerfil, setBotonPerfil] = useState();
+  const [visibleColumns, setVisibleColumns] = useState(columns);
+  const [filteredData, setFilteredData] = useState(dataPerfiles);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
 
   const mensajeEliminado = () => {
     toast.current.show({
@@ -32,27 +43,13 @@ const Usuarios = () => {
       life: 1500,
     });
   };
-
-  const mensajeRestablecido = () => {
-    toast.current.show({
-      severity: "success",
-      detail: "Se ha restablecido la clave del usuario correctamente. ",
-      life: 1500,
-    });
+  const confirmDeletePerfil = (e, perfil) => {
+    e.preventDefault();
+    setModalEliminar(true);
+    setDataPerfiles(perfil);
+    setBotonPerfil(1);
   };
-
-  const columns = [
-    { field: "id_usuario", header: "ID" },
-    { field: "nombre_completo", header: "Nombre" },
-    { field: "usuario", header: "Usuario" },
-    { field: "correo", header: "Correo" },
-    { field: "estado_usuario", header: "Estado" },
-  ];
-
-  const [visibleColumns, setVisibleColumns] = useState(columns);
-  const [filteredData, setFilteredData] = useState(dataUsuarios);
-  const [searchTerm, setSearchTerm] = useState("");
-
+  
   const onColumnToggle = (event) => {
     let selectedColumns = event.value;
     let orderedSelectedColumns = columns.filter((col) =>
@@ -60,36 +57,6 @@ const Usuarios = () => {
     );
     setVisibleColumns(orderedSelectedColumns);
   };
-
-  const handleSearch = (e) => {
-    const value = e.target.value.toLowerCase();
-    setSearchTerm(value);
-
-    const filteredItems = dataUsuarios.filter((item) => {
-      return (
-        item.nombre_completo.toLowerCase().includes(value) ||
-        item.usuario.toLowerCase().includes(value) ||
-        item.correo.toLowerCase().includes(value) ||
-        item.estado_usuario.toLowerCase().includes(value)
-      );
-    });
-    setFilteredData(filteredItems);
-  };
-
-  const confirmDeleteUsuario = (e, usuario) => {
-    e.preventDefault();
-    setModalEliminar(true);
-    setUsuarioState(usuario);
-    setBotonUsuario(1);
-  };
-
-  const confirmRestablecer = (e, usuario) => {
-    e.preventDefault();
-    setModalEliminar(true);
-    setUsuarioState(usuario);
-    setBotonUsuario(2);
-  };
-
   const header = (
     <MultiSelect
       value={visibleColumns}
@@ -101,11 +68,20 @@ const Usuarios = () => {
     />
   );
 
-  useEffect(() => {
-    setFilteredData(dataUsuarios);
-  }, [dataUsuarios]);
 
-  const [modalVisible, setModalVisible] = useState(false);
+  const handleSearch = (e) => {
+    const value = e.target.value.toLowerCase();
+    setSearchTerm(value);
+
+    const filteredItems = dataPerfiles.filter((item) => {
+      return item.nombre_perfil.toLowerCase().includes(value);
+    });
+    setFilteredData(filteredItems);
+  };
+
+  useEffect(() => {
+    setFilteredData(dataPerfiles);
+  }, [dataPerfiles]);
 
   const toggleModal = () => {
     setModalVisible(!modalVisible);
@@ -115,17 +91,15 @@ const Usuarios = () => {
     <div className="w-5/6">
       <Toast ref={toast} />
       <div className="flex justify-center gap-x-4 m-2 p-3">
-        <h1 className="text-3xl">Usuarios</h1>
-        <i className="pi pi-user" style={{ fontSize: "2rem" }}></i>
+        <h1 className="text-3xl">Perfiles</h1>
+        <i className="pi pi-users" style={{ fontSize: "2rem" }}></i>
       </div>
       {modalEliminar ? (
         <Confirmar
           modalEliminar={modalEliminar}
           setModalEliminar={setModalEliminar}
           mensajeEliminado={mensajeEliminado}
-          confirmRestablecer={confirmRestablecer}
-          botonUsuario={botonUsuario}
-          mensajeRestablecido={mensajeRestablecido}
+          botonPerfil={botonPerfil}
         />
       ) : (
         ""
@@ -141,11 +115,11 @@ const Usuarios = () => {
           </button>
           <Link
             className="px-4 p-2 mx-2 rounded-md text-red-500 border-2 border-red-500 hover:bg-red-500 hover:text-white transition duration-300 ease-in-out"
-            to="/home/config/usuarios/inactivos"
+            to="/home/config/perfiles/inactivos"
           >
             Inactivos
           </Link>
-          <ModalAgregarUsuarios visible={modalVisible} onClose={toggleModal} />
+          {/* <ModalAgregarPerfil visible={modalVisible} onClose={toggleModal} /> */}
         </div>
         <span className="p-input-icon-left ml-auto border rounded-md">
           <i className="pi pi-search" />
@@ -157,7 +131,6 @@ const Usuarios = () => {
           />
         </span>
       </div>
-
       <div className="card">
         <DataTable
           className="custom-datatable"
@@ -193,18 +166,9 @@ const Usuarios = () => {
                   tooltip="Eliminar"
                   className="p-button-rounded p-button-danger p-mr-2"
                   tooltipOptions={{ position: "top" }}
-                  onClick={(e) => confirmDeleteUsuario(e, rowData)}
+                  onClick={(e) => confirmDeletePerfil(e, rowData)}
                 >
                   {Trash_Icono}
-                </Button>
-
-                <Button
-                  tooltip="Restablecer"
-                  className="p-button-rounded p-button-info"
-                  tooltipOptions={{ position: "top" }}
-                  onClick={(e) => confirmRestablecer(e, rowData)}
-                >
-                  {Key_Icono}
                 </Button>
               </div>
             )}
@@ -215,4 +179,4 @@ const Usuarios = () => {
   );
 };
 
-export default Usuarios;
+export default Perfiles;
