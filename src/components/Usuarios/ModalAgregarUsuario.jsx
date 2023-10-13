@@ -1,16 +1,24 @@
+<<<<<<< HEAD:src/components/Usuarios/ModalAgregarUsuarios.jsx
 import { useEffect, useState } from "react";
 import { Steps } from 'primereact/steps';
+=======
+import React, { useEffect, useRef, useState } from "react";
+>>>>>>> fe5c135cef3a2a2a970106a79bc81f6ebc6763fe:src/components/Usuarios/ModalAgregarUsuario.jsx
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import useUsuarios from "../../hooks/useUsuarios";
-import { Toast } from "primereact/toast";
-import { useRef } from "react";
+import { Message } from "primereact/message";
 
 const ModalAgregarUsuarios = ({ visible, onClose }) => {
+  const [perfilesSeleccionados, setPerfilesSeleccionados] = useState([]);
+  const [modulosSeleccionados, setModulosSeleccionados] = useState([]);
+  const [permisosPorModulo, setPermisosPorModulo] = useState([]);
+  const [step, setStep] = useState(1);
 
+<<<<<<< HEAD:src/components/Usuarios/ModalAgregarUsuarios.jsx
 
 
   const toast = useRef(null);
@@ -18,6 +26,9 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
   const mensajeGuardado = () => {
     toast.current.show({ severity: 'success', summary: 'Success', detail: 'Registro guardado con éxito', life: 5000 });
   }
+=======
+  const msgs = useRef(null);
+>>>>>>> fe5c135cef3a2a2a970106a79bc81f6ebc6763fe:src/components/Usuarios/ModalAgregarUsuario.jsx
 
   const {
     UsuariosAgg,
@@ -34,12 +45,31 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
     setUsuariosAgg,
   } = useUsuarios();
 
-  const [perfilesSeleccionados, setPerfilesSeleccionados] = useState([]);
-  const [modulosSeleccionados, setModulosSeleccionados] = useState([]);
-  const [permisosPorModulo, setPermisosPorModulo] = useState([]);
-  const [step, setStep] = useState(1);
+  const handleClose = () => {
+    // Cierra el Dialog y reinicia el estado
+    onClose();
 
+    // Limpia los campos del formulario
+    setUsuariosAgg({
+      nombre: "",
+      usuario: "",
+      correo: "",
+      clave: "",
+      claverepetida: "",
+    });
 
+<<<<<<< HEAD:src/components/Usuarios/ModalAgregarUsuarios.jsx
+=======
+    // Limpia las selecciones
+    setPerfilesSeleccionados([]);
+    setModulosSeleccionados([]);
+    setPermisosPorModulo([]);
+
+    // Limpia los errores
+    setErrors({});
+  };
+
+>>>>>>> fe5c135cef3a2a2a970106a79bc81f6ebc6763fe:src/components/Usuarios/ModalAgregarUsuario.jsx
   const handleGuardar = async () => {
     try {
       const formData = {
@@ -51,22 +81,33 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
         roles: permisosPorModulo,
       };
 
-      if (
-        step === 2 &&
-        perfilesSeleccionados.some(
-          (perfil) => perfil.id_perfil == true
-        )
-      ) {
-        console.error("No se puede guardar si algún perfil está seleccionado");
+      if (step === 2 && perfilesSeleccionados.length === 0) {
+        console.error(
+          "No se puede guardar si no se ha seleccionado ningún perfil"
+        );
         return;
       }
 
+<<<<<<< HEAD:src/components/Usuarios/ModalAgregarUsuarios.jsx
+=======
+      if (step === 3 && permisosPorModulo.length === 0) {
+        console.error(
+          "No se puede guardar si no se ha seleccionado ningún permiso de módulo"
+        );
+        return;
+      }
+
+>>>>>>> fe5c135cef3a2a2a970106a79bc81f6ebc6763fe:src/components/Usuarios/ModalAgregarUsuario.jsx
       // Llama a la función de guardarUsuario y pasa el formData
       const response = await guardarUsuario(formData);
 
       if (response) {
         onClose(); // Cierra el modal
+<<<<<<< HEAD:src/components/Usuarios/ModalAgregarUsuarios.jsx
         setStep(1); // Vuelve al primer paso
+=======
+        setStep(1); // Vuelve al primer paso --> no funciona
+>>>>>>> fe5c135cef3a2a2a970106a79bc81f6ebc6763fe:src/components/Usuarios/ModalAgregarUsuario.jsx
 
         // Limpia los campos del formulario
         setUsuariosAgg({
@@ -74,14 +115,17 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
           usuario: "",
           correo: "",
           clave: "",
-          claverepetida: "", // Puedes agregar más campos aquí
+          claverepetida: "",
         });
         setPerfilesSeleccionados([]);
         setModulosSeleccionados([]);
         setPermisosPorModulo([]);
+<<<<<<< HEAD:src/components/Usuarios/ModalAgregarUsuarios.jsx
 
         // Muestra el mensaje de éxito
         mensajeGuardado();
+=======
+>>>>>>> fe5c135cef3a2a2a970106a79bc81f6ebc6763fe:src/components/Usuarios/ModalAgregarUsuario.jsx
       }
     } catch (error) {
       // Maneja los errores si ocurren
@@ -107,7 +151,15 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
       if (!emailPattern.test(UsuariosAgg.correo)) {
         errors.correo = "El correo electrónico no es válido";
       }
-      if (UsuariosAgg.clave !== UsuariosAgg.claverepetida) {
+      if (
+        UsuariosAgg.clave.trim() === "" &&
+        UsuariosAgg.claverepetida.trim() === ""
+      ) {
+        // Para cuando ambos campos están vacíos
+        errors.clave = "La clave está vacía";
+        errors.claverepetida = "La confirmación de clave está vacía";
+      } else if (UsuariosAgg.clave !== UsuariosAgg.claverepetida) {
+        // Para cuando las contraseñas no coinciden
         errors.clave = "Las contraseñas no coinciden";
         errors.claverepetida = "Las contraseñas no coinciden";
       }
@@ -117,16 +169,22 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
         errors.perfiles = "Debes seleccionar al menos un perfil";
       }
     }
+<<<<<<< HEAD:src/components/Usuarios/ModalAgregarUsuarios.jsx
 
+=======
+    if (step === 3) {
+      if (permisosPorModulo.length === 0) {
+        errors.modulos = "Debes seleccionar al menos un modulo";
+      }
+    }
+>>>>>>> fe5c135cef3a2a2a970106a79bc81f6ebc6763fe:src/components/Usuarios/ModalAgregarUsuario.jsx
 
-    // Si hay errores, establece el estado de errores y no avances al siguiente paso
     if (Object.keys(errors).length > 0) {
       setErrors(errors);
       return;
     }
 
-    // Si no hay errores, avanza al siguiente paso
-    setErrors({}); // Limpia los errores si no hay ninguno
+    setErrors({});
     setStep(step + 1);
   };
 
@@ -142,6 +200,7 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
     }
   }, [step]);
 
+  // Botones de Atrás, Siguiente y Guardar del Modal
   const footerContent = (
     <div>
       {step > 1 && (
@@ -169,6 +228,8 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
       )}
     </div>
   );
+
+  // Checkbox de Perfiles
   const CheckboxChange = (rowData) => {
     const perfilId = rowData.id_perfil;
 
@@ -191,31 +252,20 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
       ]);
     }
   };
-  const CheckboxChangeModulo = (rowData) => {
-    const moduloId = rowData.id_modulo;
 
-    if (
-      modulosSeleccionados.some(
-        (modulo) => modulo.id_modulo === rowData.id_modulo
-      )
-    ) {
-      // Deseleccionar el módulo
-      const updatedSeleccionados = modulosSeleccionados.filter(
-        (mod) => mod.id_modulo !== moduloId
-      );
-      setModulosSeleccionados(updatedSeleccionados);
-
-      // También debes eliminar los permisos asociados al módulo deseleccionado
-      const updatedPermisos = { ...permisosPorModulo };
-      delete updatedPermisos[moduloId];
-      setPermisosPorModulo(updatedPermisos);
-    } else {
-      // Inicializar los permisos asociados al módulo seleccionado como un arreglo vacío
-      setPermisosPorModulo([...permisosPorModulo, { id_rol: moduloId }]);
-    }
-    console.log();
+  const checkboxPerfil = (rowData) => {
+    return (
+      <input
+        type="checkbox"
+        checked={perfilesSeleccionados.some(
+          (perfil) => perfil.id_perfil == rowData.id_perfil
+        )}
+        onChange={() => CheckboxChange(rowData)}
+      />
+    );
   };
 
+  // Checkbox de permisos
   const CheckboxChangePermiso = (permisoId, moduloId, idRolModulo) => {
     // Verifica si el permiso ya está en la lista de seleccionados
     const isPermisoSelected = permisosPorModulo.some(
@@ -235,24 +285,11 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
     }
   };
 
-  console.log(permisosPorModulo);
-
-  const checkboxPerfil = (rowData) => {
-    return (
-      <input
-        type="checkbox"
-        checked={perfilesSeleccionados.some(
-          (perfil) => perfil.id_perfil == rowData.id_perfil
-        )}
-        onChange={() => CheckboxChange(rowData)}
-      />
-    );
-  };
-
   return (
     <Dialog
       header={<h1>Agregar Usuario</h1>}
       visible={visible}
+<<<<<<< HEAD:src/components/Usuarios/ModalAgregarUsuarios.jsx
       // style={{width:"40vw"}}
       className="w-full sm:w-full md:w-1/2  lg:w-1/2  xl:w-1/2 "
       onHide={onClose}
@@ -269,6 +306,13 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
           activeIndex={step - 1} className="custom-stepper p-4 hidden md:block" />
           <hr className="mb-4"/>
 
+=======
+      style={{ width: "40vw" }}
+      onHide={handleClose}
+      footer={footerContent}
+    >
+      <div>
+>>>>>>> fe5c135cef3a2a2a970106a79bc81f6ebc6763fe:src/components/Usuarios/ModalAgregarUsuario.jsx
         {step === 1 && (
           <div className="flex flex-col pt-3 flex-wrap sm:w-full">
             <div className="grid grid-cols-2 gap-4">
@@ -330,7 +374,7 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
                   onChange={(e) => handleChangeUsuario(e)}
                 />
                 {errors.clave && (
-                  <div className="text-red-600">{errors.clave}</div>
+                  <div className="text-red-600 text-xs ">{errors.clave}</div>
                 )}
               </div>
               <div className="flex flex-col">
@@ -344,7 +388,9 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
                   onChange={(e) => handleChangeUsuario(e)}
                 />
                 {errors.claverepetida && (
-                  <div className="text-red-600">{errors.claverepetida}</div>
+                  <div className="text-red-600 text-xs ">
+                    {errors.claverepetida}
+                  </div>
                 )}
               </div>
             </div>
@@ -352,7 +398,14 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
         )}
         {step === 2 && (
           <div>
+<<<<<<< HEAD:src/components/Usuarios/ModalAgregarUsuarios.jsx
             <h1 className="text-lg">Perfiles</h1>
+=======
+            <div className="flex">
+              <h1>Perfiles</h1>
+              <div className="ml-16"></div>
+            </div>
+>>>>>>> fe5c135cef3a2a2a970106a79bc81f6ebc6763fe:src/components/Usuarios/ModalAgregarUsuario.jsx
             <div className="p-mx-auto mt-3 p-datatable">
               <DataTable value={perfilesAgg} className="custom-datatable mx-4">
                 <Column field="nombre_perfil" header="Nombre" />
@@ -363,10 +416,23 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
                   style={{ width: "3em" }}
                 />
               </DataTable>
+<<<<<<< HEAD:src/components/Usuarios/ModalAgregarUsuarios.jsx
               {errors.perfiles && (
                 <div className="text-red-600 mt-2">{errors.perfiles}</div>
               )}
 
+=======
+              <div className="text-center mt-2">
+                {errors.perfiles && (
+                  <Message
+                    severity="warn"
+                    text="Debes seleccionar al menos un perfil"
+                  >
+                    {errors.perfiles}
+                  </Message>
+                )}
+              </div>
+>>>>>>> fe5c135cef3a2a2a970106a79bc81f6ebc6763fe:src/components/Usuarios/ModalAgregarUsuario.jsx
             </div>
           </div>
         )}
@@ -377,6 +443,7 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
               <DataTable value={modulosAgg} className="custom-datatable">
                 <Column field="id_modulo" header="ID" />
                 <Column field="nombre_modulo" header="Nombre del Módulo" />
+                
 
                 {/* Columna para el permiso "Consultar" */}
                 <Column
@@ -466,6 +533,11 @@ const ModalAgregarUsuarios = ({ visible, onClose }) => {
                   style={{ width: "5em" }}
                 />
               </DataTable>
+          <div className="text-center mt-2">
+          {errors.modulos && (
+            <Message severity="warn" text={errors.modulos} />
+          )}
+        </div>
             </div>
           </div>
         )}

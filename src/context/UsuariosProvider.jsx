@@ -119,6 +119,7 @@ const UsuariosProvider = ({ children }) => {
       console.log(error)
     }
   }
+  
 
   const restablecerContraseñaProvider = async () => {
     const token = localStorage.getItem('token')
@@ -171,30 +172,6 @@ const UsuariosProvider = ({ children }) => {
   const handleChangeUsuario = (e) => {
     setUsuariosAgg({ ...UsuariosAgg, [e.target.name]: e.target.value });
   };
-
-  useEffect(() => {
-    const getUsuarios = async () => {
-      const token = localStorage.getItem("token");
-
-      const config = {
-        headers: {
-          "Content-Type": "apllication/json",
-          Authorization: `Bearer ${token}`,
-        },
-      };
-
-      try {
-        const { data } = await conexionCliente(`/usuarios?estado=1`, config);
-        console.log(data);
-        setDataUsuarios(data);
-        // navigate('/home')
-      } catch (error) {
-        setDataUsuarios([]);
-        // navigate('/')
-      }
-    };
-    getUsuarios();
-  }, []);
 
   const obtenerPerfiles = async () => {
     const token = localStorage.getItem("token");
@@ -252,7 +229,7 @@ const UsuariosProvider = ({ children }) => {
       const response = await conexionCliente.post("/usuarios", formData, config);
       console.log("Información guardada con éxito:", response);
       // toast.current.show({severity:'success', summary: 'Success', detail:'Registro guardado con exito', life: 3000});
-      return response.data; // Puedes devolver los datos guardados si es necesario
+      setDataUsuarios([...dataUsuarios, response.data ]); // Puedes devolver los datos guardados si es necesario
     } catch (error) {
       console.error("Error al guardar la información:", error);
       throw error; // Puedes lanzar una excepción en caso de error

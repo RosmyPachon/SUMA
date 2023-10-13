@@ -10,6 +10,7 @@ const AuthProvider = ({ children }) => {
 
   const [authUsuario, setAuthUsuario] = useState({})
   const [authModulos, setAuthModulos] = useState([])
+  
 
   useEffect(() => {
     const autenticarUsuario = async () => {
